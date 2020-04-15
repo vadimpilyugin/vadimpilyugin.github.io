@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Bomb Control Center</title>
+</head>
+<body>
+	<button onclick="press('/start')">Start</button>
+	<button onclick="press('/activate')">Activate</button>
+	<button onclick="press('/reset')">Reset</button>
+	<input type="text" id="bombAddr" value="192.168.1.66:4567"></input>
+	<textarea id="console" style="width: 100%; height: 20vh; margin-top: 50px; border-radius: 3px; border: 2px dashed #dddddd; background: black; color: white; font-size: 14px; font-family: monospace;"></textarea>
+	<button onclick="clearLog()">Clear</button>
+</body>
+
+<script type="text/javascript">
+	function log(str) {
+		let textarea = document.querySelector("#console");
+		textarea.textContent += str;
+		textarea.scrollTop = textarea.scrollHeight;
+	}
+	function clearLog(str) {
+		let textarea = document.querySelector("#console");
+		textarea.textContent = "";
+		textarea.scrollTop = textarea.scrollHeight;
+	}
+
+	function press(endpoint) {
+		let request = new XMLHttpRequest();
+		let addr = document.querySelector("#bombAddr").value;
+		let url = "http://"+addr+endpoint;
+		request.open('GET', url, true);
+
+		request.onload = function() {
+		  if (this.status >= 200 && this.status < 400) {
+		    // Success!
+		    log("Successfull request to "+url+"\n");
+		    log("Response: " + this.response + "\n");
+		  } else {
+		    // We reached our target server, but it returned an error
+		    log("Failed request to "+url+"\n");
+		    log("We reached our target server, but it returned an error\n");
+
+		  }
+		};
+
+		request.onerror = function() {
+			// There was a connection error of some sort
+		    log("Failed request to "+url+"\n");
+		    log("There was a connection error of some sort\n");
+		};
+
+		log("Making request to " + url + "\n");
+		request.send();
+	}
+</script>
+</html>
